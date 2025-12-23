@@ -63,7 +63,7 @@ class App(tk.Tk):
         header_frame.pack(fill=tk.X, pady=(0, 20))
         
         ttk.Label(header_frame, text="Lito: Text to Speech", font=("Segoe UI", 16, "bold")).pack(side=tk.LEFT)
-        ttk.Button(header_frame, text="About Lito", command=self.show_about).pack(side=tk.RIGHT)
+        ttk.Button(header_frame, text="?", width=3, command=self.show_about).pack(side=tk.RIGHT)
 
         # Voice Selection
         voice_frame = ttk.Frame(main_frame)

@@ -10,10 +10,10 @@ A test run is considered a **PASS** only if **ALL** the following steps are comp
 
 1.  **Launch the App:**
     *   Run: `uv run desktop-app/main.py`
-    *   **Check:** App window opens. Title is "Lito vX.X.X". Header says "Lito: Text to Speech". "About Lito" button is visible.
+    *   **Check:** App window opens. Title is "Lito vX.X.X". Header says "Lito: Text to Speech". "?" button is visible.
 
 2.  **Verify About Dialog:**
-    *   Click "About Lito".
+    *   Click "?".
     *   **Check:** Popup appears with correct Version, Copyright, and Contact Info.
     *   Close the popup.
 
