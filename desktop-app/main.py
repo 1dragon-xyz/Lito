@@ -31,10 +31,15 @@ class App(tk.Tk):
         self.cancel_event = threading.Event()
         self.is_converting = False
 
+        self.create_menu()
         self.init_ui()
         
         # Load voices in background
         threading.Thread(target=self.load_voices, daemon=True).start()
+
+    def create_menu(self):
+        # Placeholder for menu bar
+        pass
 
     def init_ui(self):
         style = ttk.Style()
@@ -241,7 +246,7 @@ class App(tk.Tk):
             self.current_output_path = output_path
             self.btn_play.config(state="normal")
             self.btn_folder.config(state="normal")
-            self.status_var.set("Done! Saved to Documents/VietnameseTTS")
+            self.status_var.set("Done! Saved to Documents/Lito")
             messagebox.showinfo("Success", "Conversion complete!")
         elif result == "cancelled":
             self.status_var.set("Conversion cancelled.")
