@@ -4,8 +4,8 @@ import os
 import re
 
 # Configuration
-SOURCE_FILE = r"d:\My Code\tts-vietnamese\personal-docs\Đề xuất đầu tư dự án nghĩa trang Đà Nẵng.md"
-OUTPUT_FILE = r"d:\My Code\tts-vietnamese\personal-docs\Đề xuất đầu tư dự án nghĩa trang Đà Nẵng.mp3"
+SOURCE_FILE = r"D:\my-code\lito\personal-docs\Đề xuất đầu tư dự án nghĩa trang Đà Nẵng.md"
+OUTPUT_FILE = r"D:\my-code\lito\personal-docs\Đề xuất đầu tư dự án nghĩa trang Đà Nẵng.mp3"
 VOICE = "vi-VN-HoaiMyNeural"
 
 def clean_markdown(text):

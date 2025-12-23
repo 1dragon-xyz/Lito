@@ -1,7 +1,7 @@
 import re
 import os
 
-FILE_PATH = r"d:\My Code\tts-vietnamese\documents\Đề xuất đầu tư dự án nghĩa trang Đà Nẵng.md"
+FILE_PATH = r"D:\my-code\lito\documents\Đề xuất đầu tư dự án nghĩa trang Đà Nẵng.md"
 
 def remove_english_glosses():
     if not os.path.exists(FILE_PATH):

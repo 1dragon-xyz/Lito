@@ -4,8 +4,8 @@ import os
 from pypdf import PdfReader
 
 # Configuration
-PDF_PATH = r"d:\My Code\tts-vietnamese\documents\Đề xuất đầu tư dự án nghĩa trang Đà Nẵng.pdf"
-OUTPUT_PATH = r"d:\My Code\tts-vietnamese\documents\Đề xuất đầu tư dự án nghĩa trang Đà Nẵng.mp3"
+PDF_PATH = r"D:\my-code\lito\documents\Đề xuất đầu tư dự án nghĩa trang Đà Nẵng.pdf"
+OUTPUT_PATH = r"D:\my-code\lito\documents\Đề xuất đầu tư dự án nghĩa trang Đà Nẵng.mp3"
 VOICE = "vi-VN-HoaiMyNeural" # Female voice, usually good for reading
 
 async def generate_audio_from_pdf():

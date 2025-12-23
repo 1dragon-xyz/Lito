@@ -14,7 +14,7 @@ A minimalist, high-quality desktop application to convert text into natural-soun
 
 ## Downloads & Updates
 
-- **Latest Version:** Download the latest executable from the [GitHub Releases](https://github.com/anhdhnguyen/tts-vietnamese/releases) page.
+- **Latest Version:** Download the latest executable from the [GitHub Releases](https://github.com/1dragon-xyz/lito/releases) page.
 - **Changelog:** See [CHANGELOG.md](CHANGELOG.md) for a history of updates and changes.
 
 ## Setup & Installation
@@ -23,8 +23,8 @@ This project uses `uv` for package management.
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/anhdhnguyen/tts-vietnamese.git
-    cd tts-vietnamese
+    git clone https://github.com/1dragon-xyz/lito.git
+    cd lito
     ```
 
 2.  **Install dependencies:**

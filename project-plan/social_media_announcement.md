@@ -5,7 +5,7 @@
 **The Story:** Started for a visually impaired family member -> grew into a tool for everyone.
 **The Value:** Native, Fast, Free, Open Source (vs. expensive paid tools).
 
-**Release Link:** https://github.com/anhdhnguyen/tts-vietnamese/releases/tag/v1.0.0
+**Release Link:** https://github.com/1dragon-xyz/lito/releases/tag/v1.0.0
 
 ---
 
@@ -34,7 +34,7 @@ It gives you the premium quality of paid services, for free.
 4/4
 If you want to listen to documents on the go, or know someone who needs this accessibility boost, grab it now.
 
-Download: https://github.com/anhdhnguyen/tts-vietnamese/releases/tag/v1.0.0
+Download: https://github.com/1dragon-xyz/lito/releases/tag/v1.0.0
 
 #OpenSource #A11y #Python #WindowsDev #TTS
 
@@ -48,7 +48,7 @@ I built this to help my visually impaired family member read, but it's now a too
 
 Just a fast, native app to turn PDFs & Text into audio. 100% Free & Open Source.
 
-Get it: https://github.com/anhdhnguyen/tts-vietnamese/releases/tag/v1.0.0
+Get it: https://github.com/1dragon-xyz/lito/releases/tag/v1.0.0
 
 ---
 
@@ -76,8 +76,8 @@ Unlike services that charge you per minute or month, this tool is **100% Free an
 
 Accessibility should be free.
 
-Download Release: https://github.com/anhdhnguyen/tts-vietnamese/releases/tag/v1.0.0
-Source Code: https://github.com/anhdhnguyen/tts-vietnamese
+Download Release: https://github.com/1dragon-xyz/lito/releases/tag/v1.0.0
+Source Code: https://github.com/1dragon-xyz/lito
 
 #OpenSource #Accessibility #Python #SoftwareEngineering #Windows #A11y
 
@@ -99,6 +99,6 @@ A simple executable that rivals paid formatting tools. You get high-quality AI v
 
 If you are tired of monthly fees for TTS tools, give this a try.
 
-🔗 Download: https://github.com/anhdhnguyen/tts-vietnamese/releases/tag/v1.0.0
+🔗 Download: https://github.com/1dragon-xyz/lito/releases/tag/v1.0.0
 
 #Coding #SideProject #Productivity #Vietnamese #OpenSource

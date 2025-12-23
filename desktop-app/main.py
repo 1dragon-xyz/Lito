@@ -110,7 +110,7 @@ class App(tk.Tk):
             "Contact & Updates:\n"
             "• Email: anhdhnguyen@gmail.com\n"
             "• X: x.com/1dragon_xyz\n"
-            "• GitHub: github.com/1-dragon\n"
+            "• GitHub: github.com/1dragon-xyz\n"
             "• LinkedIn: linkedin.com/in/anhdhnguyen"
         )
         messagebox.showinfo("About Lito", about_text)
