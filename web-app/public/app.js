@@ -268,8 +268,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error(error);
-            statusDiv.textContent = error.message;
-            statusDiv.style.color = "#f87171";
+            if (error.message.includes("503") || error.message.includes("unavailable")) {
+                statusDiv.innerHTML = `
+                    🚫 <strong>Demo limit reached</strong><br>
+                    The free demo is currently at capacity. <br>
+                    Download Lito Desktop for unlimited, local use:<br>
+                    <a href="https://github.com/1dragon-xyz/lito/releases" target="_blank" style="color: #60a5fa; text-decoration: underline; font-weight: bold;">
+                        Download Lito Desktop
+                    </a>
+                `;
+                statusDiv.style.color = "#f59e0b";
+            } else {
+                statusDiv.textContent = error.message;
+                statusDiv.style.color = "#f87171";
+            }
         } finally {
             convertBtn.disabled = false;
             convertBtn.textContent = "Convert & Play";

@@ -20,6 +20,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Service kill switch - can be disabled via environment variable
+SERVICE_ENABLED = os.environ.get("SERVICE_ENABLED", "true").lower() == "true"
+
 # Character limit for demo (HOOK: enough to demo, triggers download desire)
 MAX_CHARS = 1500
 
@@ -108,6 +111,15 @@ async def get_voices():
 
 @app.post("/api/tts")
 async def text_to_speech(request: TTSRequest):
+    # Check if service is enabled (kill switch)
+    if not SERVICE_ENABLED:
+        raise HTTPException(
+            status_code=503,
+            detail="🚫 Demo service temporarily unavailable due to high usage. "
+                   "Download Lito Desktop for unlimited, free text-to-speech: "
+                   "https://github.com/1dragon-xyz/lito/releases"
+        )
+    
     text = request.text.strip()
     
     if not text:
