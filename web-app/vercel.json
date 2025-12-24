@@ -1,5 +1,13 @@
 {
+    "installCommand": "bash check_deploy.sh",
     "rewrites": [
-      { "source": "/api/(.*)", "destination": "/api/index.py" }
+        {
+            "source": "/api/(.*)",
+            "destination": "/api/index.py"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/public/$1"
+        }
     ]
 }

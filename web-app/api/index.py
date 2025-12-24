@@ -1,9 +1,7 @@
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import edge_tts
-import os
 
 app = FastAPI()
 
@@ -54,8 +52,41 @@ async def text_to_speech(request: TTSRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Serve static files (HTML/CSS/JS) for local development
-# Vercel handles this via vercel.json in production, but this allows running locally with 'uvicorn'
-public_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "public")
-if os.path.exists(public_path):
-    app.mount("/", StaticFiles(directory=public_path, html=True), name="public")
+from fastapi import UploadFile, File
+from pypdf import PdfReader
+import io
+import re
+
+def clean_text(text: str) -> str:
+    # Basic cleaning
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
+@app.post("/api/extract-text")
+async def extract_text(file: UploadFile = File(...)):
+    try:
+        content = await file.read()
+        filename = file.filename.lower()
+        extracted_text = ""
+
+        if filename.endswith(".pdf"):
+            pdf_file = io.BytesIO(content)
+            reader = PdfReader(pdf_file)
+            for page in reader.pages:
+                text = page.extract_text()
+                if text:
+                    extracted_text += text + "\n"
+        else:
+            # Assume text/md
+            extracted_text = content.decode("utf-8")
+        
+        # Clean up
+        final_text = clean_text(extracted_text)
+        
+        if not final_text:
+             raise HTTPException(status_code=400, detail="Could not extract text from file")
+
+        return {"text": final_text}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process file: {str(e)}")

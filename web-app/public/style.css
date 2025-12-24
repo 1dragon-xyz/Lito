@@ -3,9 +3,14 @@
     --card-bg: #1e293b;
     --text-primary: #f1f5f9;
     --text-secondary: #94a3b8;
+    --text-tertiary: #64748b;
     --accent: #3b82f6;
     --accent-hover: #2563eb;
     --border: #334155;
+    --primary: #3b82f6;
+    --surface: #1e293b;
+    --surface-alt: #0f172a;
+    --radius: 8px;
 }
 
 body {
@@ -131,4 +136,96 @@ footer a {
 .tiny {
     font-size: 0.8rem;
     opacity: 0.7;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    width: auto; /* Override general button width */
+}
+
+.tab-btn:hover {
+    background: none;
+    color: var(--text-primary);
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    font-weight: 500;
+}
+
+/* File Upload */
+.file-upload-box {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface-alt);
+    margin-bottom: 20px;
+}
+
+.file-upload-box:hover, .file-upload-box.dragover {
+    border-color: var(--primary);
+    background: #172033;
+}
+
+.file-hint {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    margin-top: 5px;
+}
+
+#file-name-display {
+    margin-top: 10px;
+    font-weight: 500;
+    color: var(--primary);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+        margin: 10px;
+        width: auto;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    .tabs {
+        justify-content: space-around;
+        gap: 0;
+    }
+    
+    .tab-btn {
+        flex: 1;
+        text-align: center;
+        border-radius: 0;
+    }
+    
+    textarea {
+        min-height: 150px;
+    }
+    
+    main {
+        padding: 1rem;
+    }
 }
