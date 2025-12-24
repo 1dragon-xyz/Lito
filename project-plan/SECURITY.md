@@ -2,8 +2,16 @@
 
 ## Secrets Management ✅
 
+### Centralized Environment Folder
+
+All secrets are stored in the `env/` folder:
+- `env/lito-key.json` - Google Cloud service account key
+- `env/.env.local` - Local development variables (if needed)
+- `env/.env.production` - Production variables (if needed)
+
 ### What's Protected
-- [x] `lito-key.json` in `.gitignore`
+- [x] Entire `env/` folder in `.gitignore`
+- [x] `*.env` files globally ignored
 - [x] Google Cloud credentials stored as Vercel environment variable
 - [x] No hardcoded API keys in source code
 - [x] Pre-commit hook template created (`.agent/hooks/pre-commit`)
@@ -41,11 +49,14 @@ The `web-app/check_deploy.sh` script runs automatically on Vercel deployment and
 
 ## Files That Should NEVER Be Committed
 
-- `lito-key.json` - Google Cloud service account key
+**All files in `env/` folder** including:
+- `env/lito-key.json` - Google Cloud service account key
+- `env/*.env` - Any environment files
 - `*.pem` - Private keys
-- `*.key` - Any key files
+- `*.key` - Any key files  
 - `credentials.json` - Any credential files
-- `.env` files with secrets
+
+The entire `env/` folder is ignored by `.gitignore`.
 
 ## Environment Variables (Vercel)
 

@@ -1,76 +1,172 @@
-# Google Cloud Budget Setup
+# Google Cloud Budget Setup with Auto-Shutdown
 
-## Objective
-Prevent unexpected charges by limiting Google Cloud TTS to the free tier only.
+## Overview
 
-## Steps to Set Budget Alert
+Automated budget monitoring system that:
+- ✅ Sends email alerts at **50%** and **70%** usage
+- ✅ **Automatically disables** TTS API at **80%** usage
+- ✅ Prevents any charges beyond free tier
 
-### Option 1: Via Google Cloud Console (Recommended)
+## Quick Setup (Recommended)
 
-1. Go to [Google Cloud Console - Billing](https://console.cloud.google.com/billing)
-2. Select your billing account: `My Billing Account 2`
-3. Click "Budgets & alerts" in the left menu
-4. Click "CREATE BUDGET"
-5. Configure:
-   - **Name**: `Lito TTS - Free Tier Only`
-   - **Projects**: Select `lito-tts-app`
-   - **Services**: Select `Cloud Text-to-Speech API`
-   - **Budget type**: Specified amount
-   - **Target amount**: `$0.01` (essentially $0)
-   - **Threshold rules**:
-     - 50% of budget
-     - 90% of budget
-     - 100% of budget
-   - **Actions**: Email notifications to your email
-6. Click "FINISH"
-
-### Option 2: Via gcloud CLI
+### Option 1: Automated Script
 
 ```bash
-# Enable Billing Budget API
-gcloud services enable billingbudgets.googleapis.com --project=lito-tts-app
-
-# Create budget
-gcloud billing budgets create \
-  --billing-account=013ED6-9913AA-B0942B \
-  --display-name="Lito TTS Free Tier Only" \
-  --budget-amount=0.01 \
-  --threshold-rule=percent=50 \
-  --threshold-rule=percent=90 \
-  --threshold-rule=percent=100 \
-  --filter-projects=projects/lito-tts-app \
-  --filter-services=services/texttospeech.googleapis.com
+cd scripts
+bash setup-budget.sh
 ```
+
+This will:
+1. Enable required APIs (Billing Budgets, Pub/Sub, Cloud Functions)
+2. Create Pub/Sub topic for budget notifications
+3. Create budget with $0.01 limit (free tier only)
+4. Set up thresholds at 50%, 70%, 80%
+
+### Option 2: Manual Setup via Console
+
+1. Go to [Google Cloud Console - Billing](https://console.cloud.google.com/billing)
+2. Select billing account: `My Billing Account 2`
+3. Click "Budgets & alerts"
+4. Click "CREATE BUDGET"
+5. Configure:
+   - **Name**: `Lito TTS Free Tier Monitor`
+   - **Projects**: `lito-tts-app`
+   - **Services**: `Cloud Text-to-Speech API`
+   - **Budget amount**: `$0.01`
+   - **Thresholds**: 50%, 70%, 80%
+   - **Connect Pub/Sub topic**: `budget-alerts`
+
+## Auto-Shutdown Setup (Optional but Recommended)
+
+To enable automatic API shutdown at 80%:
+
+### Deploy as Cloud Function
+
+```bash
+cd scripts
+
+# Deploy the monitoring function
+gcloud functions deploy budget-monitor \
+  --runtime python39 \
+  --trigger-topic budget-alerts \
+  --entry-point pubsub_handler \
+  --source . \
+  --project lito-tts-app
+```
+
+### Configure Email Alerts
+
+Edit `scripts/budget-monitor.py`:
+```python
+EMAIL_TO = "anhdhnguyen@gmail.com"
+EMAIL_FROM = "your-email@gmail.com"
+
+# Configure SMTP (e.g., Gmail)
+# You'll need an app password: https://support.google.com/accounts/answer/185833
+```
+
+## How It Works
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  User makes TTS request                                 │
+│  ↓                                                       │
+│  Google Cloud TTS API processes                         │
+│  ↓                                                       │
+│  Usage tracked against budget                           │
+│  ↓                                                       │
+│  ┌─────────────┬─────────────┬─────────────┐           │
+│  │   50%       │    70%      │    80%      │           │
+│  │  Email      │   Email     │   Email +   │           │
+│  │  Alert      │   Alert     │   SHUTDOWN  │           │
+│  └─────────────┴─────────────┴─────────────┘           │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Budget Thresholds
+
+| Threshold | Action | Details |
+|-----------|--------|---------|
+| **50%** | 📧 Email Alert | "Courtesy notification - usage at 50%" |
+| **70%** | ⚠️ Warning Email | "Approaching limit - API will disable at 80%" |
+| **80%** | 🛑 **Auto-Shutdown** | API disabled, email sent with re-enable instructions |
 
 ## Free Tier Limits
 
-| Service | Free Tier | Overage Cost |
-|---------|-----------|--------------|
-| Standard voices | 4M chars/month | $4 per 1M chars |
-| WaveNet/Neural voices | 1M chars/month | $16 per 1M chars |
-
-## Current Usage Estimate
-
-With **1,500 char limit** per conversion:
-- Free tier = 4M chars/month
-- **~2,666 conversions/month** for free
-- **~88 conversions/day**
+| Service | Free Tier | With 1,500 char limit |
+|---------|-----------|----------------------|
+| Standard voices | 4M chars/month | ~2,666 conversions/month |
+| WaveNet/Neural | 1M chars/month | ~666 conversions/month |
 
 ## Monitoring
 
-Check usage at: [Google Cloud Console - Text-to-Speech](https://console.cloud.google.com/apis/api/texttospeech.googleapis.com/metrics?project=lito-tts-app)
+### Check Current Usage
+```bash
+# Via CLI
+gcloud billing budgets list --billing-account=013ED6-9913AA-B0942B
 
-## What Happens if Limit is Reached?
+# Via Console
+https://console.cloud.google.com/billing/budgets?project=lito-tts-app
+```
 
-The budget alert will:
-1. Send email notifications at 50%, 90%, and 100%
-2. **Does NOT automatically stop the service** (Google Cloud doesn't support auto-shutdown)
+### Check API Status
+```bash
+gcloud services list --enabled --project=lito-tts-app | grep texttospeech
+```
 
-To truly prevent charges, you would need to:
-- Monitor emails closely
-- Manually disable the API if approaching limit
-- Or set up a Cloud Function to disable the API automatically (advanced)
+## If API Gets Disabled
 
-## Recommendation
+The API will automatically disable at 80% usage. To re-enable:
 
-For a hobby project, the budget alert is sufficient. You'll get warnings before any charges occur.
+1. **Review usage** to understand what caused the spike:
+   ```bash
+   gcloud logging read "resource.type=api AND resource.labels.service=texttospeech.googleapis.com" \
+     --project=lito-tts-app \
+     --limit=100
+   ```
+
+2. **Decide on action**:
+   - Wait until next month (free tier resets)
+   - Increase budget if legitimate usage
+   - Investigate if usage seems abnormal
+
+3. **Re-enable API**:
+   ```bash
+   gcloud services enable texttospeech.googleapis.com --project=lito-tts-app
+   ```
+
+## Testing
+
+Test the budget monitor locally:
+
+```bash
+cd scripts
+python3 budget-monitor.py
+```
+
+Test Pub/Sub notification:
+
+```bash
+gcloud pubsub topics publish budget-alerts \
+  --message='{"costAmount": 0.008, "budgetAmount": 0.01}' \
+  --project=lito-tts-app
+```
+
+## Security Notes
+
+- Budget alerts use Pub/Sub (secure, encrypted)
+- API shutdown requires `serviceusage.services.disable` permission
+- Email alerts require SMTP configuration (use app passwords, not main password)
+
+## Cost Protection Summary
+
+| Protection Layer | Status |
+|------------------|--------|
+| Budget limit set | ✅ $0.01 |
+| Email alerts (50%, 70%) | ✅ Configured |
+| Auto-shutdown (80%) | ⚠️ Requires Cloud Function deployment |
+| Manual monitoring | ✅ Console dashboard |
+
+---
+
+**Recommendation**: Deploy the Cloud Function for complete automation. Without it, you'll get email alerts but need to manually disable the API.
