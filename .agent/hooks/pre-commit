@@ -1,0 +1,28 @@
+#!/bin/bash
+# Pre-commit hook to prevent committing secrets
+# Installation: Copy this file to .git/hooks/pre-commit and make it executable
+
+echo "🔒 Scanning for secrets..."
+
+# Check for common secret patterns
+if git diff --cached --name-only | xargs grep -E -i "(api[_-]?key|secret|password|private[_-]?key|BEGIN (RSA|PRIVATE) KEY)" 2>/dev/null; then
+    echo "❌ ERROR: Potential secret detected in staged files!"
+    echo "Please remove secrets before committing."
+    exit 1
+fi
+
+# Check for credential files
+if git diff --cached --name-only | grep -E "\.(pem|key|p12|pfx)$|credentials\.json|.*-key\.json" 2>/dev/null; then
+    echo "❌ ERROR: Credential file detected in staged files!"
+    echo "Files like *.pem, *.key, *-key.json should not be committed."
+    exit 1
+fi
+
+# Check if lito-key.json is accidentally staged
+if git diff --cached --name-only | grep "lito-key.json" 2>/dev/null; then
+    echo "❌ ERROR: lito-key.json should not be committed!"
+    exit 1
+fi
+
+echo "✅ No secrets detected"
+exit 0

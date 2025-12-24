@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lito Web | 1dragon.xyz</title>
+    <title>Lito Web | Free Text-to-Speech Demo</title>
+    <meta name="description"
+        content="Free text-to-speech demo supporting 20 languages. Convert text to natural-sounding audio.">
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐲</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐲</text></svg>">
 </head>
+
 <body>
     <div class="container">
         <header>
             <h1>🐲 Lito Web</h1>
-            <p>Free, Unlimited Text-to-Speech</p>
+            <p>Free Text-to-Speech Demo</p>
         </header>
 
         <main>
             <div class="control-group">
-                <label for="voice-select">Voice</label>
+                <label for="voice-select">Voice (20 Languages)</label>
                 <select id="voice-select">
                     <option>Loading voices...</option>
                 </select>
@@ -30,6 +35,9 @@
             <div class="input-group">
                 <div id="text-tab" class="tab-content active">
                     <textarea id="text-input" placeholder="Type or paste your text here..."></textarea>
+                    <div class="char-counter">
+                        <span id="char-count">0</span> / <span id="char-limit">1,500</span> characters
+                    </div>
                 </div>
                 <div id="file-tab" class="tab-content" style="display: none;">
                     <div class="file-upload-box" id="drop-zone">
@@ -47,13 +55,26 @@
             </div>
 
             <audio id="audio-player" controls hidden></audio>
+
+            <!-- Download CTA -->
+            <div class="download-cta">
+                <p>📥 <strong>Want unlimited text-to-speech?</strong></p>
+                <a href="https://github.com/1dragon-xyz/lito/releases" target="_blank" class="download-btn">
+                    Download Lito Desktop – Free Forever
+                </a>
+            </div>
         </main>
 
         <footer>
             <p>Built with ❤️ by <a href="https://1dragon.xyz" target="_blank">1dragon</a></p>
-            <p class="tiny">Powered by Edge TTS & Vercel</p>
+            <p class="credits">
+                Powered by <a href="https://cloud.google.com/text-to-speech" target="_blank">Google Cloud TTS</a>
+                · Hosted on <a href="https://vercel.com" target="_blank">Vercel</a>
+            </p>
+            <p class="terms"><a href="/terms.html">Terms of Service</a></p>
         </footer>
     </div>
     <script src="app.js"></script>
 </body>
+
 </html>

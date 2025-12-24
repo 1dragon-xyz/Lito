@@ -1,5 +1,5 @@
 fastapi
 uvicorn
-edge-tts
+google-cloud-texttospeech
 python-multipart
 pypdf

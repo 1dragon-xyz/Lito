@@ -1,10 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Constants (HOOK: enough to demo, triggers download desire)
+    const MAX_CHARS = 1500;
+
     // Elements
     const voiceSelect = document.getElementById('voice-select');
     const textInput = document.getElementById('text-input');
     const convertBtn = document.getElementById('convert-btn');
     const statusDiv = document.getElementById('status');
     const audioPlayer = document.getElementById('audio-player');
+    const charCount = document.getElementById('char-count');
 
     // Tab Elements
     const tabBtns = document.querySelectorAll('.tab-btn');
@@ -13,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dropZone = document.getElementById('drop-zone');
     const fileNameDisplay = document.getElementById('file-name-display');
 
-    let currentMode = 'text'; // 'text' or 'file'
+    let currentMode = 'text';
     let selectedFile = null;
 
     // --- 1. Initialization & UI Logic ---
@@ -27,8 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
             voiceSelect.innerHTML = '';
             voices.forEach(voice => {
                 const option = document.createElement('option');
-                option.value = voice.ShortName;
-                option.textContent = voice.FriendlyName;
+                option.value = voice.id;
+                option.textContent = voice.name;
                 voiceSelect.appendChild(option);
             });
         } catch (error) {
@@ -37,6 +41,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     loadVoices();
+
+    // Character Counter
+    textInput.addEventListener('input', () => {
+        const count = textInput.value.length;
+        charCount.textContent = count.toLocaleString();
+
+        if (count > MAX_CHARS) {
+            charCount.parentElement.classList.add('over-limit');
+        } else if (count > MAX_CHARS * 0.9) {
+            charCount.parentElement.classList.add('near-limit');
+            charCount.parentElement.classList.remove('over-limit');
+        } else {
+            charCount.parentElement.classList.remove('near-limit', 'over-limit');
+        }
+    });
 
     // Tab Switching
     tabBtns.forEach(btn => {
@@ -86,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadBtn = document.createElement('button');
     downloadBtn.textContent = "Download Full Audio";
     downloadBtn.style.marginTop = "10px";
-    downloadBtn.style.backgroundColor = "#10b981"; // Emerald green
+    downloadBtn.style.backgroundColor = "#10b981";
     downloadBtn.style.display = "none";
     document.querySelector('.action-group').appendChild(downloadBtn);
 
@@ -94,9 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const playFullBtn = document.createElement('button');
     playFullBtn.textContent = "Play Full Audio";
     playFullBtn.style.marginTop = "10px";
-    playFullBtn.style.backgroundColor = "#3b82f6"; // Blue
+    playFullBtn.style.backgroundColor = "#3b82f6";
     playFullBtn.style.display = "none";
-    // Insert before download button
     document.querySelector('.action-group').insertBefore(playFullBtn, downloadBtn);
 
 
@@ -123,7 +141,10 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text, voice }),
         });
-        if (!response.ok) throw new Error('Failed to fetch audio chunk');
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to fetch audio');
+        }
         return await response.blob();
     }
 
@@ -142,12 +163,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const data = await response.json();
+        if (data.truncated) {
+            statusDiv.textContent = `Note: Text was truncated to ${MAX_CHARS.toLocaleString()} characters.`;
+            statusDiv.style.color = "#f59e0b";
+        }
         return data.text;
     }
 
     // --- Main Action ---
     convertBtn.addEventListener('click', async () => {
-        // 1. Get Text
         let textToConvert = "";
         const voice = voiceSelect.value;
 
@@ -157,7 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
         audioPlayer.hidden = true;
         audioPlayer.pause();
 
-        // UI Reset
         statusDiv.style.color = "#94a3b8";
 
         try {
@@ -168,16 +191,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentMode === 'text') {
                 textToConvert = textInput.value.trim();
                 if (!textToConvert) throw new Error("Please enter some text.");
+                if (textToConvert.length > MAX_CHARS) {
+                    throw new Error(`Text exceeds ${MAX_CHARS.toLocaleString()} character limit. Download Lito Desktop for unlimited use.`);
+                }
             } else {
                 if (!selectedFile) throw new Error("Please select a file.");
                 textToConvert = await extractTextFromFile(selectedFile);
             }
 
-            // 2. Chunking
+            // Chunking
             const chunks = splitIntoChunks(textToConvert);
-            statusDiv.textContent = "Generating Preview..."; // Magic status
+            statusDiv.textContent = "Generating Preview...";
 
-            // 3. Process Chunk 1 for Preview
+            // Process Chunk 1 for Preview
             const firstChunkBlob = await fetchAudioChunk(chunks[0], voice);
             const firstChunkUrl = URL.createObjectURL(firstChunkBlob);
 
@@ -187,26 +213,27 @@ document.addEventListener('DOMContentLoaded', () => {
             audioPlayer.play();
 
             statusDiv.textContent = "Playing Preview... (Generating full audio in background)";
-            statusDiv.style.color = "#3b82f6"; // Blue info
+            statusDiv.style.color = "#3b82f6";
 
-            // 4. Background Process Rest
+            // Background Process Rest
             if (chunks.length > 1) {
                 const audioBlobs = [firstChunkBlob];
 
-                // Fetch remaining chunks in parallel
                 const promises = chunks.slice(1).map(chunk => fetchAudioChunk(chunk, voice));
                 const remainingBlobs = await Promise.all(promises);
                 audioBlobs.push(...remainingBlobs);
 
-                // Merge
                 const fullAudioBlob = new Blob(audioBlobs, { type: 'audio/mpeg' });
                 const fullAudioUrl = URL.createObjectURL(fullAudioBlob);
 
-                // Enable Full Actions
+                // Generate filename from first few words
+                const words = textToConvert.split(/\s+/).slice(0, 3).join('_').replace(/[^a-zA-Z0-9_]/g, '');
+                const filename = words ? `lito_${words}.mp3` : "lito_audio.mp3";
+
                 downloadBtn.onclick = () => {
                     const a = document.createElement('a');
                     a.href = fullAudioUrl;
-                    a.download = "lito_full_audio.mp3";
+                    a.download = filename;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
@@ -221,13 +248,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 downloadBtn.style.display = "block";
                 playFullBtn.style.display = "block";
                 statusDiv.textContent = "Full audio ready!";
-                statusDiv.style.color = "#10b981"; // Green success
+                statusDiv.style.color = "#10b981";
             } else {
-                // If only 1 chunk, we already have full audio
+                const words = textToConvert.split(/\s+/).slice(0, 3).join('_').replace(/[^a-zA-Z0-9_]/g, '');
+                const filename = words ? `lito_${words}.mp3` : "lito_audio.mp3";
+
                 downloadBtn.onclick = () => {
                     const a = document.createElement('a');
                     a.href = firstChunkUrl;
-                    a.download = "lito_audio.mp3";
+                    a.download = filename;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
@@ -247,4 +276,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-

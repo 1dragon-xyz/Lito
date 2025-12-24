@@ -1,5 +1,12 @@
 {
     "installCommand": "bash check_deploy.sh",
+    "redirects": [
+        {
+            "source": "/",
+            "destination": "/index.html",
+            "permanent": false
+        }
+    ],
     "rewrites": [
         {
             "source": "/api/(.*)",

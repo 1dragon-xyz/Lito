@@ -11,6 +11,9 @@
     --surface: #1e293b;
     --surface-alt: #0f172a;
     --radius: 8px;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #f87171;
 }
 
 body {
@@ -66,7 +69,8 @@ label {
     color: var(--text-secondary);
 }
 
-select, textarea {
+select,
+textarea {
     width: 100%;
     background-color: var(--bg-color);
     border: 1px solid var(--border);
@@ -75,10 +79,11 @@ select, textarea {
     border-radius: 6px;
     font-family: inherit;
     font-size: 1rem;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
-select:focus, textarea:focus {
+select:focus,
+textarea:focus {
     outline: none;
     border-color: var(--accent);
 }
@@ -122,6 +127,56 @@ audio {
     margin-top: 1.5rem;
 }
 
+/* Character Counter */
+.char-counter {
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+    margin-top: 0.5rem;
+    transition: color 0.2s;
+}
+
+.char-counter.near-limit {
+    color: var(--warning);
+}
+
+.char-counter.over-limit {
+    color: var(--error);
+    font-weight: 600;
+}
+
+/* Download CTA */
+.download-cta {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d1f4a 100%);
+    border-radius: var(--radius);
+    text-align: center;
+    border: 1px solid var(--border);
+}
+
+.download-cta p {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+}
+
+.download-btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(to right, var(--accent), #8b5cf6);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* Footer */
 footer {
     margin-top: 3rem;
     text-align: center;
@@ -131,6 +186,24 @@ footer {
 footer a {
     color: var(--accent);
     text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+.credits {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.terms {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.terms a {
+    color: var(--text-tertiary);
 }
 
 .tiny {
@@ -154,7 +227,7 @@ footer a {
     color: var(--text-secondary);
     border-bottom: 2px solid transparent;
     transition: all 0.2s;
-    width: auto; /* Override general button width */
+    width: auto;
 }
 
 .tab-btn:hover {
@@ -180,7 +253,8 @@ footer a {
     margin-bottom: 20px;
 }
 
-.file-upload-box:hover, .file-upload-box.dragover {
+.file-upload-box:hover,
+.file-upload-box.dragover {
     border-color: var(--primary);
     background: #172033;
 }
@@ -205,27 +279,31 @@ footer a {
         margin: 10px;
         width: auto;
     }
-    
+
     header h1 {
         font-size: 2rem;
     }
-    
+
     .tabs {
         justify-content: space-around;
         gap: 0;
     }
-    
+
     .tab-btn {
         flex: 1;
         text-align: center;
         border-radius: 0;
     }
-    
+
     textarea {
         min-height: 150px;
     }
-    
+
     main {
+        padding: 1rem;
+    }
+
+    .download-cta {
         padding: 1rem;
     }
 }
